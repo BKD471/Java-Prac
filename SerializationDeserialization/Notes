@@ -1,0 +1,45 @@
+
+
+Problem stmt
+
+
+1) Object should have faciltiy of tranportation over n/w
+  we have serializable marker interface whenevr a clas implements it,
+  at runtime required functionality will be attached to transport object
+2) Object should be supported to store inside file system
+
+   since we are sending data over n/w ,data can be in byte code format
+   to get the data and send the data to and fro over a channel and store it in a file,
+   we need streams  (from io)
+
+   This entire process is called Serialization.
+
+   stored data is in form of byte code so to make it readable we need Deserialization
+
+       FileOutputStream,ObjectOutputStream            remote   ObjectInputStream,FileInputStream
+Java app---------------over n/w----------------------->HDD------------------------->remote Java App
+         srerialization                             derialization
+
+
+   The process of saving or writing state of an object to a file is called Serialization but stirctly
+   speaking it is the process of converting object from jaa supported form to to other n/w supported form
+   /file supported ofrm
+   By Using FileOutputSTream,ObjectOutputStream we can have Serialization
+
+   SAVING THE STATE OF AN OBJECT INTO FILE IS CALLED SERIALIZATION
+
+   The process of reading state of an object to a file is called De Serialization but stirctly
+   speaking it is the process of converting object from  file supported form to java supported form
+   By Using FileInputStream,ObjectInputStream we can have Serialization
+
+   READING THE OBJECT FROM FILE TO JAVA APP IS DESERIALIZATION
+
+
+
+   IMP points
+   1)serilization can only be performed for serilizable objects
+   2)an obj is said to be serilizable iff the corresponding class implements serilizable MI
+    The reqd ability will be provide by jvm
+   3)we can add any no of obj to the file  and can read all those objects from the file but
+   in order which we wrote obj, the same order the object willl come back.
+   4)I f we try to serilize non srializable object then expect NotSerializableException

@@ -1,0 +1,172 @@
+Task-->Activity /piece of work
+Os runs multiple tasks to run on PC
+
+Running multiple task at same time is multiTasking
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+MultiTasking
+
+1)Process Level Multitasking(PLM)
+
+Process->its program in execution
+program --> a set of instructions to be executed
+PLM is running muitple proccesses at same time/
+
+Executing several task simulatneously
+where each task is a speratae independenta process is called PLM
+like youtube,intellij ide,vscode,spotify at same time on same computer.
+
+OS takes care all of this.
+
+This switching from one process to another is called Context Switching.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+2)Thread Level
+
+Suppose  we have a java progm,
+it contains three independent task to execute,
+but task 1 is holding for a while so other two tasks will naturally starve.
+SO instead of running the program on a single main thread allocate three threads to
+execute the three tasks to properly utilize the cpu tme, reduce tge response time of system
+and improve performance.
+
+This is Multi Threading and its managed by JVM
+
+Since switching takes place between separate independent threads/tasks of same program
+and managed by JVM,its light weight
+
+JVM will use Thread Scheduler(ts) to control threads.
+
+A independent flow of execution is called Thread
+For every thread ,there will be a separate and independent job.
+
+
+In java , thread is created in two ways
+1)By Implementing Runnable interface
+2)Extending Thread class
+
+TS
+
+If multiple threads are waiting to be scheduled, it is decided by TS part of JVM.
+In case of MT, we cant predict exact o/p but possible o/p
+
+Thread of a pgm shares memory and files that process been allocated
+but each thread has its own pc,stack and local variables
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Thread types:
+
+1) Daemon :  Background threads such as gc( garbage collector)
+2) Non daemon: created within applications i.e user created thread
+                or main thread by jvm to run main()
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Hazards in Concurrency
+
+1)Race Condition
+when a mutable state is being shared between multiple threads that is constantly mutating it
+if that action is not managed ,then it might lead to race around.
+
+e.g
+
+two users/threads A,B have a joint back Account
+BankAccount{
+1  double balance;
+2  void withdraw(double amnt){
+3     if(amnt<=balance){
+4        balance-=amnt;
+     }
+  }
+}
+Lets say balance is 100
+A,b are simultaneously trying to withdraw 75
+
+Case 1: A is picked up by TS,moved it to running from runnable
+      A executes upto line 3, check got success
+      coz amnt=75 and balance=100 so (amnt<=balance) evaluates to true
+
+      But then context switching happend and TS moves A to runnable and
+      brings B to running, A havent executed line 4 so balance never got deducted
+      so its still 100
+
+      B executes upto line 3, check got success
+      coz amnt=75 and balance=100 so (amnt<=balance) evaluates to true
+      B executes line 4,balance is now (100-75) 25
+      B thread performed all its actions and went to dead state
+
+      A then comes to running,resumes from where it left, executes line 4  deducts 75
+      balance=25, amnt=75  so balance-amnt=(25-75)= -50
+      Which is a discrepancy, and this is the problem
+
+Remedy: Treat the withdraw() as  single atomic unit of execution,
+        whenever any thread enters ,it has to finish executing it
+
+
+case 2:
+
+   public int IdGenerator{
+1       private long id;
+2       public long getId(){
+3         return id++;
+       }
+   }
+
+This class generates unique id,
+suppose A,B two threads are simultaneously accessing it.
+
+In line 3, three ops are being performed
+1)returning current id value
+2)Incrementing id so to update the id
+3)storing the updated id so to serve this update value to next thread whenever it invokes it
+
+A executes upto line 3, performs only 1) & 2) but not 3)
+so updated value is never stored
+Context switching happens B came , got the previous unupdated value.
+So this is another discrepancy.
+
+Remedy: Make this 3 ops as atomic.
+
+
+This is why we need Synchronization
+
+Sync has two parts 1) Lock and 2)Block of data that needs to be made thread safe/atomic
+
+Lock--> Ref to object
+
+For a thread to enter into that block,
+it needs to have lock of that obj
+Lock is acquired once it enters the block
+Lock is released when it leaves the block
+A lock can atmost be acquired by one thread at a time
+
+Locks are on objects and not methiods
+
+If a thread has obj;s lock ,then other thread cannot enter any sync methods of that obj
+
+Lock is acquired by entering into sync block or sync method.
+But it can enter in any unsynchronized methods.
+
+Locks are per obj and not per methods
+
+Static Sunchronized methods use class obj for lock.
+Every class has single lock,every obj has single lock
+
+so use sync everywhere it has that critical var which is read by threads
+Chances are value stored by one thread may not be visible to other thread
+
+dont use two different locks to guard same var, no effect of sync is there
+
+
+
+
+
+
+
+
+
